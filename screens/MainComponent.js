@@ -6,19 +6,37 @@ import CampsiteInfoScreen from "./CampsiteInfoScreen";
 import { Platform } from "react-native";
 import Constants from 'expo-constants';
 import { createStackNavigator } from "@react-navigation/stack";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import HomeScreen from "./HomeScreen";
 
-const DirectoryNavigatory = () => {
+const Drawer = createDrawerNavigator();
+
+const screenOptions =  {
+    headerTintColor: '#fff',
+    headerStyle: { backgroundColor: '#5637DD' }
+};
+
+const HomeNavigator = () => {
+    const Stack = createStackNavigator();
+
+    return (
+        <Stack.Navigator screenOptions={screenOptions}>
+            <Stack.Screen 
+                name="Home"
+                component={HomeScreen}
+                options={{title: 'Home'}}
+            />
+        </Stack.Navigator>
+    )
+}
+
+const DirectoryNavigator = () => {
     const Stack = createStackNavigator();
 
     return (
         <Stack.Navigator 
             initialRouteName="Directory" 
-            screenOptions={{ 
-                headerStyle: { 
-                    backgroundColor: '#5637DD' 
-                }, 
-                headerTintColor: '#fff'
-            }}
+            screenOptions={screenOptions}
         >
             <Stack.Screen 
                 name="Directory"
@@ -45,7 +63,30 @@ const Main = () => {
             flex : 1, 
             paddingTop : Platform.OS === "ios" ? 0 : Constants.statusBarHeight
         }}>
-            <DirectoryNavigatory />
+            <Drawer.Navigator
+                initialRouteName="HomeNav"
+                screenOptions={{
+                    drawerStyle: { backgroundColor: "#CEC8FF" },
+                    headerShown: true,
+                }}
+            >
+                <Drawer.Screen 
+                    name="HomeNav"
+                    component={HomeNavigator}
+                    options={{
+                        title: 'Home',
+                        headerShown: false
+                    }}
+                />
+                <Drawer.Screen 
+                    name="DirectoryNav"
+                    component={DirectoryNavigator}
+                    options={{
+                        title: 'Campsite Directory',
+                        headerShown: false
+                    }}
+                />
+            </Drawer.Navigator>
         </View>
     )
 }
