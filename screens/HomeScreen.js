@@ -6,8 +6,22 @@ import { PROMOTIONS } from "../shared/promotions";
 import { PARTNERS } from "../shared/partners";
 import { useSelector } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
+import Loading from "../components/LoadingComponent";
 
-const FeaturedItem = ({ item }) => {
+const FeaturedItem = (props) => {
+    const {item} = props;
+
+    if(props.isLoading) {
+        return <Loading />;
+    }
+    if(props.errMess) {
+        return (
+            <View>
+                <Text>{props.errMess}</Text>
+            </View>
+        );
+    }
+
     if (item) {
         return (
             <Card 
@@ -45,9 +59,6 @@ const FeaturedItem = ({ item }) => {
 };
 
 const HomeScreen = () => {
-    // const [campsites, setCampsites] = useState(CAMPSITES);
-    // const [promotions, setPromotions] = useState(PROMOTIONS);
-    // const [partners, setPartners] = useState(PARTNERS);
 
     const campsites = useSelector((state) => state.campsites);
     console.log(campsites)
@@ -62,9 +73,9 @@ const HomeScreen = () => {
 
     return (
         <ScrollView>
-            <FeaturedItem item={featCampsite}/>
-            <FeaturedItem item={featPromotion}/>
-            <FeaturedItem item={featPartner}/>
+            <FeaturedItem item={featCampsite} isLoading={campsites.isLoading} errMess={campsites.errMess} />
+            <FeaturedItem item={featPromotion} isLoading={promotions.isLoading} errMess={promotions.errMess} />
+            <FeaturedItem item={featPartner} isLoading={partners.isLoading} errMess={partners.errMess} />
         </ScrollView>
     )
 }
