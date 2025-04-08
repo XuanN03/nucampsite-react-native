@@ -3,13 +3,37 @@ import { FlatList, StyleSheet, Text, View, Button, Modal } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleFavorite } from "../features/favorites/favoritesSlice";
 import { useState } from "react";
+import { Rating, Input } from "react-native-elements";
+import { color } from "react-native-elements/dist/helpers";
+import { postComment } from "../features/comments/commentsSlice";
 
 const CampsiteInfoScreen = ({ route }) => {
     const [showModal, setShowModal] = useState(false);
+    const [rating, setRating] = useState(5);
+    const [author, setAuthor] = useState("");
+    const [text, setText] = useState("");
     const comments = useSelector((state) => state.comments);
     const favorites = useSelector((state)=> state.favorites);
     const { campsite } = route.params;
     const dispatch = useDispatch();
+
+    const handleSubmit = () => {
+        const newComment = {
+            author,
+            rating,
+            text,
+            campsiteId: campsite.id
+        };
+
+        dispatch(postComment(newComment));
+        setShowModal(!showModal);
+    };
+
+    const resetForm = () => {
+        setAuthor("");
+        setRating(5);
+        setText("");
+    };
 
     const renderCommentItem = ({item})=> {
         return(
@@ -18,9 +42,12 @@ const CampsiteInfoScreen = ({ route }) => {
                     {item.text}
                 </Text>
 
-                <Text style={{fontSize:12}}>
-                    {item.rating} Stars
-                </Text>
+                <Rating
+                    readonly
+                    startingValue={item.rating}
+                    imageSize={10}
+                    style={{ alignItems: "flex-start", paddingVertical: "5%" }}
+                />
 
                 <Text style={{fontSize:12}}>
                     {`--${item.author}, ${item.date}`}
@@ -55,11 +82,46 @@ const CampsiteInfoScreen = ({ route }) => {
             onRequestClose={()=> setShowModal(!showModal)}
             >
                 <View style={styles.modal}>
+                    <Rating
+                        showRating
+                        startingValue={rating}
+                        imageSize = {40}
+                        onFinishRating={(rating)=>setRating(rating)}
+                        style = {{paddingVertical: 10}}
+                    />
+                    <Input 
+                        placeholder="Author"
+                        leftIcon={{type:'font-awesome', name: "user-o"}}
+                        leftIconContainerStyle={{paddingRight: 10}}
+                        onChangeText={(author)=>setAuthor(author)}
+                        value={author}
+                    />
+                    <Input 
+                        placeholder="Comment"
+                        leftIcon={{type:'font-awesome', name: "comment-o"}}
+                        leftIconContainerStyle={{paddingRight: 10}}
+                        onChangeText={(text)=>setText(text)}
+                        value={text}
+                    />
+
+                    <View style={{margin:10}}>
+                        <Button 
+                            title='Submit'
+                            color='#5637DD'
+                            onPress={() => {
+                                handleSubmit();
+                                resetForm();
+                            }}
+                        />
+                    </View>
                     <View style={{margin:10}} >
                         <Button 
-                        title="Cancel"
-                        color='#808080'
-                        onPress={() => setShowModal(!showModal)} 
+                            title="Cancel"
+                            color='#808080'
+                            onPress={() => {
+                                setShowModal(!showModal);
+                                resetForm();
+                            }} 
                         />
                     </View>
                 </View>
