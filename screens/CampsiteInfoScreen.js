@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleFavorite } from "../features/favorites/favoritesSlice";
 import { useState } from "react";
 import { Rating, Input } from "react-native-elements";
-import { color } from "react-native-elements/dist/helpers";
 import { postComment } from "../features/comments/commentsSlice";
 import * as Animatable from 'react-native-animatable';
 

@@ -57,7 +57,7 @@ const RenderCampsite = (props) => {
                 {...panResponder.panHandlers}
                 ref={view}
             >
-                <Card style={styles.cardContainer}>
+                <Card containerStyle={styles.cardContainer}>
                     <Card.Image source={{ uri:baseUrl + campsite.image }}>
                         <View style={{justifyContent: 'center', flex: 1}}>
                             <Text
