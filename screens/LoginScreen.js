@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import { CheckBox, Input, Button, Icon } from "react-native-elements";
 import * as SecureStore from 'expo-secure-store';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as ImagePicker from 'expo-image-picker';
+import { baseUrl } from '../shared/baseUrl';
+import logo from '../assets/images/logo.png';
 
 const LoginTab = ({navigation}) => {
     const [username, setUsername] = useState('');
@@ -112,6 +115,7 @@ const RegisterTab = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
+    const [imageUrl, setImageUrl] = useState(baseUrl + 'images/logo.png');
     const [remember, setRemember] = useState(false);
 
     const handleRegister = () => { 
@@ -123,7 +127,7 @@ const RegisterTab = () => {
             email,
             remember
         };
-        console.log(JSON.stringify(userInfo));
+        console.log(JSON.stringify(userInfo, null, 2));
 
         if (remember) {
             SecureStore.setItemAsync(
@@ -142,10 +146,36 @@ const RegisterTab = () => {
         }
     };
 
+    const getImageFromCamera = async () => {
+        const cameraPermission = await ImagePicker.requestCameraPermissionsAsync()
+        
+        if(cameraPermission.status === 'granted') {
+            const capturedImage = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [1,1]
+            });
+
+            if(capturedImage.assets) {
+                console.log(capturedImage.assets[0]);
+                setImageUrl(capturedImage.assets[0].uri);
+            }
+        }
+    }
 
     return (
         <ScrollView>
             <View style={styles.container}>
+                <View style={styles.imageContainer} >
+                    <Image
+                        source={{uri:imageUrl}}
+                        loadingIndicatorSource={logo}
+                        style={styles.image}
+                    />
+                    <Button 
+                        title='Camera'
+                        onPress={getImageFromCamera}
+                    />
+                </View>
                 <Input 
                     placeholder='Username'
                     leftIcon={{type:'font-awesome', name:'user-o'}}
@@ -281,6 +311,17 @@ const styles = StyleSheet.create({
         margin:20,
         marginRight:40,
         marginLeft:40
+    },
+    imageContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        margin: 10
+    },
+    image: {
+        width: 60,
+        height: 60
     }
 });
 
